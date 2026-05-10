@@ -26,7 +26,7 @@ This engine is designed to help users intelligently allocate their investments i
 
 1. Install the required dependencies:
    ```bash
-   pip3 install -r requirements.txt
+   pip install -r requirements.txt
    ```
 
 ## Usage
@@ -37,14 +37,14 @@ Start the suggestion engine by running:
 Start the CLI suggestion engine by running:
 
 ```bash
-python3 main.py
+python main.py
 ```
 
 ### Option 2: Web Interface (GUI)
 Start the beautiful, interactive web interface by running:
 
 ```bash
-python3 app.py
+python app.py
 ```
 Then open your browser and navigate to `http://127.0.0.1:5001`
 
