@@ -122,3 +122,28 @@ class Portfolio:
             breakdown[strategy] += value
         
         return {k: round(v, 2) for k, v in breakdown.items()}
+        
+    def get_historical_values(self, historical_prices: Dict[str, Dict[str, float]]) -> List[Dict]:
+        """
+        Calculate portfolio value over historical dates.
+        Returns a list of dicts: [{'date': '2023-10-01', 'value': 5000.0}, ...]
+        """
+        # Collect all unique dates across all tickers
+        all_dates = set()
+        for ticker_data in historical_prices.values():
+            all_dates.update(ticker_data.keys())
+            
+        sorted_dates = sorted(list(all_dates))
+        
+        history = []
+        for date in sorted_dates:
+            total_value = 0
+            for ticker, holding in self.holdings.items():
+                price = historical_prices.get(ticker, {}).get(date, self.current_values.get(ticker, 0))
+                total_value += holding["shares"] * price
+            history.append({
+                "date": date,
+                "value": round(total_value, 2)
+            })
+            
+        return history

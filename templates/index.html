@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Portfolio Suggestion Engine</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/static/style.css">
+    <!-- Chart.js for beautiful charts -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <div class="background">
+        <div class="blob blob-1"></div>
+        <div class="blob blob-2"></div>
+    </div>
+    
+    <div class="container">
+        <header>
+            <h1>Portfolio Suggestion Engine</h1>
+            <p>Intelligent asset allocation powered by real-time market data.</p>
+        </header>
+
+        <main>
+            <div class="glass-panel form-panel">
+                <h2>Configure Investment</h2>
+                <div class="input-group">
+                    <label for="amount">Investment Amount (USD)</label>
+                    <div class="currency-input">
+                        <span>$</span>
+                        <input type="number" id="amount" min="5000" placeholder="e.g. 10000" value="5000">
+                    </div>
+                    <small>Minimum $5,000</small>
+                </div>
+
+                <div class="input-group">
+                    <label>Select Strategies (Max 2)</label>
+                    <div class="strategy-grid">
+                        {% for key, info in strategies.items() %}
+                        <div class="strategy-card" data-strategy="{{ key }}">
+                            <h3>{{ info.name }}</h3>
+                            <p>{{ info.description }}</p>
+                            <span class="tickers">{{ info.securities.keys() | list | join(', ') }}</span>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <button id="generate-btn" class="primary-btn">
+                    <span class="btn-text">Generate Portfolio</span>
+                    <div class="loader hidden"></div>
+                </button>
+                <div id="error-message" class="error hidden"></div>
+            </div>
+
+            <div id="results-panel" class="glass-panel results-panel hidden">
+                <h2>Your Suggested Portfolio</h2>
+                
+                <div class="summary-cards">
+                    <div class="summary-card">
+                        <h4>Total Investment</h4>
+                        <div class="value" id="res-investment">--</div>
+                    </div>
+                    <div class="summary-card">
+                        <h4>Current Value</h4>
+                        <div class="value" id="res-current-value">--</div>
+                    </div>
+                    <div class="summary-card">
+                        <h4>Gain / Loss</h4>
+                        <div class="value" id="res-gain">--</div>
+                    </div>
+                </div>
+
+                <div class="details-container">
+                    <div class="holdings-section">
+                        <h3>Holdings Breakdown</h3>
+                        <div id="holdings-list"></div>
+                    </div>
+                    
+                    <div class="chart-section">
+                        <h3>5-Day Historical Trend</h3>
+                        <div class="chart-container">
+                            <canvas id="trendChart"></canvas>
+                        </div>
+                        <div id="trend-stats" class="trend-stats"></div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="/static/script.js"></script>
+</body>
+</html>

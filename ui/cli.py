@@ -17,7 +17,6 @@ class PortfolioUI:
     def __init__(self):
         """Initialize the UI."""
         self.fetcher = StockDataFetcher()
-        self.history = PortfolioHistory()
         self.portfolio = None
     
     def display_welcome(self):
@@ -71,30 +70,51 @@ class PortfolioUI:
         selected = []
         print("\n" + "-"*70)
         
-        while len(selected) < 1 or len(selected) > 2:
-            prompt = f"Select strategy (enter name or number, max 2): "
+        while True:
+            prompt = f"Select 1 or 2 strategies (comma-separated, e.g., '1, 4' or 'ethical, value'): "
             user_input = input(prompt).strip().lower()
             
-            if user_input.isdigit():
-                idx = int(user_input) - 1
-                if 0 <= idx < len(strategies):
-                    strategy = strategies[idx]
-                else:
-                    print("❌ Invalid selection. Please try again.\n")
-                    continue
-            else:
-                if user_input in strategies:
-                    strategy = user_input
-                else:
-                    print("❌ Invalid strategy name. Please try again.\n")
-                    continue
+            # Split by comma
+            parts = [p.strip() for p in user_input.split(',')]
             
-            if strategy in selected:
-                print("❌ Strategy already selected. Choose a different one.\n")
+            if len(parts) < 1 or len(parts) > 2:
+                print("❌ Please enter exactly 1 or 2 strategies.\n")
                 continue
+                
+            selected = []
+            invalid = False
+            for part in parts:
+                if not part:
+                    invalid = True
+                    break
+                if part.isdigit():
+                    idx = int(part) - 1
+                    if 0 <= idx < len(strategies):
+                        selected.append(strategies[idx])
+                    else:
+                        print(f"❌ Invalid selection number: {part}")
+                        invalid = True
+                        break
+                else:
+                    if part in strategies:
+                        selected.append(part)
+                    else:
+                        print(f"❌ Invalid strategy name: {part}")
+                        invalid = True
+                        break
             
-            selected.append(strategy)
-            print(f"✓ Selected: {STRATEGIES[strategy]['name']}\n")
+            if invalid:
+                print("Please try again.\n")
+                continue
+                
+            # Check for duplicates
+            if len(selected) == 2 and selected[0] == selected[1]:
+                print("❌ Cannot select the same strategy twice. Please try again.\n")
+                continue
+                
+            break
+            
+        print(f"✓ Selected: {', '.join([STRATEGIES[s]['name'] for s in selected])}\n")
         
         try:
             validate_strategies(selected)
@@ -177,34 +197,40 @@ class PortfolioUI:
         print("PORTFOLIO HISTORY & TREND (Last 5 Days)")
         print("="*70)
         
-        history = self.history.get_history(5)
+        if not self.portfolio:
+            return
+            
+        tickers = list(self.portfolio.holdings.keys())
+        print(f"\nFetching historical prices for {len(tickers)} securities...")
+        historical_prices = self.fetcher.get_historical_prices(tickers, days=5)
+        history = self.portfolio.get_historical_values(historical_prices)
         
         if not history:
-            print("\nNo history data yet. Run the engine again tomorrow for trend analysis.")
+            print("\nCould not retrieve historical data.")
             return
-        
+            
         print("\nDaily Portfolio Values:")
         print("-" * 70)
-        print(f"{'Date':<15} {'Time':<12} {'Value':<15}")
+        print(f"{'Date':<15} {'Value':<15}")
         print("-" * 70)
         
         for entry in history:
-            print(f"{entry['date']:<15} {entry['time']:<12} ${entry['value']:<14,.2f}")
-        
-        trend = self.history.get_trend()
-        if trend.get("status") == "success":
+            print(f"{entry['date']:<15} ${entry['value']:<14,.2f}")
+            
+        if len(history) >= 2:
+            values = [h["value"] for h in history]
+            first_value = values[0]
+            last_value = values[-1]
+            change = last_value - first_value
+            change_percent = (change / first_value * 100) if first_value > 0 else 0
+            trend = "📈 UP" if change > 0 else "📉 DOWN" if change < 0 else "➡️ FLAT"
+            
             print("\n" + "-" * 70)
             print("TREND ANALYSIS")
             print("-" * 70)
-            print(f"Trend: {trend['trend']}")
-            print(f"Change: ${trend['change']:,.2f} ({trend['change_percent']:.2f}%)")
-            print(f"Range: ${trend['min_value']:,.2f} - ${trend['max_value']:,.2f}")
-    
-    def save_current_portfolio_value(self):
-        """Save current portfolio value to history."""
-        if self.portfolio:
-            current_value = self.portfolio.get_current_portfolio_value()
-            self.history.add_entry(current_value)
+            print(f"Trend: {trend}")
+            print(f"Change: ${change:,.2f} ({change_percent:.2f}%)")
+            print(f"Range: ${min(values):,.2f} - ${max(values):,.2f}")
     
     def run(self):
         """Run the main interactive loop."""
@@ -219,8 +245,7 @@ class PortfolioUI:
             portfolio = self.create_portfolio(amount, strategies)
             self.display_portfolio_summary(portfolio)
             
-            # Save to history and display
-            self.save_current_portfolio_value()
+            # Display historical trend
             self.display_portfolio_history()
             
             print("\n" + "="*70)

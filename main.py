@@ -6,8 +6,11 @@ Usage:
     python main.py
 """
 
-from ui.cli import PortfolioUI
+import warnings
+warnings.filterwarnings("ignore", category=DeprecationWarning)
+warnings.filterwarnings("ignore", message=".*urllib3.*")
 
+from ui.cli import PortfolioUI
 
 def main():
     """Main entry point."""
