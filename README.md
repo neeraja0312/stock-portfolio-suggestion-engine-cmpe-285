@@ -24,10 +24,25 @@ This engine is designed to help users intelligently allocate their investments i
 
 ## Installation
 
-1. Install the required dependencies:
+1. Install the required dependencies (on macOS, use `python3 -m pip` if `pip` is not found):
    ```bash
-   pip install -r requirements.txt
+   python3 -m pip install -r requirements.txt
    ```
+
+## Automated tests (pytest)
+
+The ten manual test cases in `TEST_CASES.md` are also implemented as pytest tests (offline, with mocked prices):
+
+```bash
+python3 -m pip install -r requirements-dev.txt
+python3 -m pytest -v
+```
+
+Optional integration test against live Yahoo Finance data:
+
+```bash
+python3 -m pytest -m integration -v
+```
 
 ## Usage
 
