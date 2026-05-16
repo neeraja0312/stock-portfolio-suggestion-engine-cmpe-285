@@ -4,6 +4,13 @@ A Python-based investment portfolio recommendation system that suggests stock/ET
 
 This engine is designed to help users intelligently allocate their investments into curated financial strategies, utilizing real-time financial data to demonstrate current values and simulate short-term historical trends.
 
+## Team Members
+
+Neeraja Abhinav Buch (018178238)
+Tanisha Ashishbhai Dave (019110351)
+Deven Jaimin Desai (018286944)
+Mokshit Chopra (018344482)
+
 ## Features
 
 - **Multiple Investment Strategies**:
@@ -29,20 +36,86 @@ This engine is designed to help users intelligently allocate their investments i
    python3 -m pip install -r requirements.txt
    ```
 
-## Automated tests (pytest)
+## Testing
 
-The ten manual test cases in `TEST_CASES.md` are also implemented as pytest tests (offline, with mocked prices):
+### Environment Setup
 
+**Python Version Required:** Python 3.8 or higher
+
+**Virtual Environment (Recommended):**
 ```bash
-python3 -m pip install -r requirements-dev.txt
-python3 -m pytest -v
+# Create virtual environment
+python -m venv .venv
+
+# Activate virtual environment
+source .venv/bin/activate  # macOS/Linux
+# OR
+.venv\Scripts\activate     # Windows
 ```
 
-Optional integration test against live Yahoo Finance data:
+### Installation & Dependencies
 
+Install testing dependencies:
 ```bash
-python3 -m pytest -m integration -v
+python -m pip install -r requirements-dev.txt
 ```
+
+This installs:
+- `pytest` - Testing framework
+- All packages from `requirements.txt`
+
+### Test Files Location
+
+- **Main test file**: `tests/test_term_project_cases.py` (10 automated test cases)
+- **Test fixtures**: `tests/conftest.py` (mock data and Flask test client setup)
+
+### Running the Tests
+
+**Run all 10 test cases (offline, mocked prices):**
+```bash
+python -m pytest tests/test_term_project_cases.py -v
+```
+
+**Expected Output (all 10 should pass):**
+```
+tests/test_term_project_cases.py::test_case_01_all_strategies_have_minimum_securities PASSED
+tests/test_term_project_cases.py::test_case_02_reject_investment_below_minimum PASSED
+tests/test_term_project_cases.py::test_case_03_web_rejects_amount_below_minimum PASSED
+tests/test_term_project_cases.py::test_case_04_index_investing_single_strategy PASSED
+tests/test_term_project_cases.py::test_case_05_ethical_investing_single_strategy PASSED
+tests/test_term_project_cases.py::test_case_06_two_strategies_fifty_fifty_split PASSED
+tests/test_term_project_cases.py::test_case_07_reject_more_than_two_strategies PASSED
+tests/test_term_project_cases.py::test_case_08_reject_duplicate_strategy PASSED
+tests/test_term_project_cases.py::test_case_09_reject_invalid_strategy_name PASSED
+tests/test_term_project_cases.py::test_case_10_web_quality_investing_success PASSED
+======================== 10 passed in X.XXs ========================
+```
+
+### Test Cases Overview
+
+The 10 automated test cases validate:
+
+| Test # | Name | Coverage |
+|--------|------|----------|
+| 1 | Strategy Configuration | All 5 strategies exist with ≥3 securities |
+| 2 | Backend Validation | Reject investment amounts < $5,000 |
+| 3 | API Validation | Web endpoint rejects < $5,000 |
+| 4 | Index Strategy | $10K equal split across VTI, IXUS, ILTB |
+| 5 | Ethical Strategy | $7.5K allocation to ethical holdings |
+| 6 | Multi-Strategy | $20K 50/50 Growth + Value split (9 positions) |
+| 7 | Max Strategies | Reject selection of 3+ strategies |
+| 8 | Duplicate Check | Reject same strategy selected twice |
+| 9 | Invalid Strategy | Reject unknown strategy names |
+| 10 | API Success | Quality strategy returns complete portfolio |
+
+**Optional: Integration Test (requires internet connection)**
+
+To test against live Yahoo Finance data:
+```bash
+python -m pytest tests/test_term_project_cases.py -m integration -v
+```
+
+This verifies the system can fetch real current prices for VTI and AAPL.
 
 ## Usage
 
