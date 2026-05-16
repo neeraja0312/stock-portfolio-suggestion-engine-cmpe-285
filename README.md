@@ -31,18 +31,10 @@ Mokshit Chopra (018344482)
 
 ## Installation
 
-1. Install the required dependencies (on macOS, use `python3 -m pip` if `pip` is not found):
-   ```bash
-   python3 -m pip install -r requirements.txt
-   ```
-
-## Testing
-
-### Environment Setup
-
 **Python Version Required:** Python 3.8 or higher
 
-**Virtual Environment (Recommended):**
+### Step 1: Create & Activate Virtual Environment
+
 ```bash
 # Create virtual environment
 python -m venv .venv
@@ -53,21 +45,33 @@ source .venv/bin/activate  # macOS/Linux
 .venv\Scripts\activate     # Windows
 ```
 
-### Installation & Dependencies
+### Step 2: Install Dependencies
 
-Install testing dependencies:
+For general use (CLI and web UI):
+```bash
+python -m pip install -r requirements.txt
+```
+
+For development and testing (includes test dependencies):
 ```bash
 python -m pip install -r requirements-dev.txt
 ```
 
 This installs:
-- `pytest` - Testing framework
+- `pytest` - Testing framework (dev only)
 - All packages from `requirements.txt`
+- On macOS, if `pip` is not found, use `python3 -m pip` instead
+
+## Testing
 
 ### Test Files Location
 
 - **Main test file**: `tests/test_term_project_cases.py` (10 automated test cases)
 - **Test fixtures**: `tests/conftest.py` (mock data and Flask test client setup)
+
+### Prerequisites
+
+Ensure you've completed the [Installation](#installation) steps above, including installing dev dependencies from `requirements-dev.txt`.
 
 ### Running the Tests
 
