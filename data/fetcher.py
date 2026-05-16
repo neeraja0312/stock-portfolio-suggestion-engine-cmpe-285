@@ -1,7 +1,7 @@
 """
 Real-time stock data fetching via yfinance API.
 """
-
+import pandas as pd
 import yfinance as yf
 from typing import Dict, List
 from datetime import datetime, timedelta
@@ -108,7 +108,7 @@ class StockDataFetcher:
                     for ticker in tickers:
                         if ticker in close_data.columns:
                             for date, close in close_data[ticker].items():
-                                if not __import__('pandas').isna(close):
+                                if not pd.isna(close):
                                     history[ticker][date.strftime("%Y-%m-%d")] = round(float(close), 2)
             
             return history
